@@ -1,0 +1,27 @@
+pane "top"
+
+window do
+  pane do
+    run "ls"
+    pane "uptime"
+  end
+
+  pane "ps"
+  run  "default"
+  tab  "echo"
+
+  pane "test"
+end
+
+window do
+  run 'tab1'
+
+  pane "second window"
+
+  pane do
+    run  "second pane"
+    pane "third pane"
+  end
+
+  tab "tab2"
+end
