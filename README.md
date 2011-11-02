@@ -51,7 +51,7 @@ end
 Splitting tabs into panes works as follows:
 
 ```ruby
-tab do
+window do
   pane "gitx"    # first pane
     pane do      # second pane level => horizontal split
       run "irb"
