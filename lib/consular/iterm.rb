@@ -41,6 +41,23 @@ module Consular
       @terminal = app('iTerm')
     end
 
+    # Method called by runner to Execute Termfile setup.
+    #
+    # @api public
+    def setup!
+      @termfile[:setup].each { |cmd| execute_command(cmd) }
+    end
+
+    # Method called by runner to execute Termfile.
+    #
+    # @api public
+    def process!
+      windows = @termfile[:windows]
+      default = windows.delete('default')
+      execute_window(default, :default => true) unless default[:tabs].empty?
+      windows.each_pair { |_, cont| execute_window(cont) }
+    end
+
     # Prepends the :before commands to the current context's
     # commands if it exists.
     #
@@ -112,15 +129,17 @@ module Consular
         if _first_run && !options[:default]
           open_window options.merge(window_options)
         else
-          key == 'default' ? active_window : open_tab(_options)
+          key == 'default' ? active_tab : open_tab(_options) && active_tab
         end
 
         _first_run = false
         commands = prepend_befores _content[:commands], content[:before]
         commands = set_title _name, commands
 
-        if _contents.key? :panes
-          execute_panes _contents
+        if content.key? :panes
+          commands.each { |cmd| execute_command cmd, :in => _tab }
+          execute_panes content
+          content.delete :panes
         else
           commands.each { |cmd| execute_command cmd, :in => _tab }
         end
@@ -129,15 +148,14 @@ module Consular
 
     # Execute the tab and associated panes with the designated content
     #
-    # @param [Hash] tab_contents
-    #   The Context of the tab containing panes.
+    # @param [Hash] content
+    #   The Context containing panes.
     #
     # @api public
-    def execute_panes(tab_contents)
-      panes    = tab_contents[:panes]
-      commands = tab_contents[:commands]
+    def execute_panes(content)
+      panes    = content[:panes]
+      commands = content[:tabs][:commands]
       top_level_pane_split panes, commands
-      sub_level_pane_split panes, commands
     end
 
     # Execute commands in the context of a top level pane
@@ -150,37 +168,26 @@ module Consular
     # @api public
     def top_level_pane_split(panes, commands)
       first_pane      = true
-      split_v_counter = 0
+      split_counter   = 0
 
       panes.keys.sort.each do |pane_key|
         pane_content  = panes[pane_key]
         pane_commands = pane_content[:commands]
 
-        unless first_pane
+        if first_pane
           vertical_split
           split_counter += 1
         end
         first_pane = false if first_pane
         execute_pane_commands(pane_commands,commands)
+        puts "pane!: " + pane_content.inspect
+        if pane_content.key?(:panes)
+          execute_subpanes pane_content[:panes], commands
+          pane_content.delete :panes
+        end
       end
 
       split_counter.times { select_pane 'Left' }
-    end
-
-    # Execute commands in the context of a sub level pane
-    #
-    # @param [Array] panes
-    #   Array of pane contexts
-    # @param [Array] commands
-    #   Array of tab level commands
-    #
-    # @api public
-    def sub_level_pane_split(panes, commands)
-      panes.keys.sort.each do |pane_key|
-        pane_content = panes[pane_key]
-        execute_subpanes(pane_content[:panes], commands) if pane_content.has_key? :panes
-        select_pane 'Right'
-      end
     end
 
     # Execute commands in the context of sub panes
@@ -196,6 +203,7 @@ module Consular
         subpane_commands = subpanes[subpane_key][:commands]
         horizontal_split
         execute_pane_commands(subpane_commands, tab_commands)
+        select_pane 'Right'
       end
     end
 
@@ -208,7 +216,7 @@ module Consular
     #
     # @api public
     def execute_pane_commands(pane_commands, tab_commands)
-      pane_commands = tab_commands + pane_commands
+      pane_commands = (tab_commands || []) + (pane_commands || [])
       pane_commands.each { |cmd| execute_command cmd }
     end
 
@@ -216,14 +224,14 @@ module Consular
     #
     # @api public
     def vertical_split
-      call_ui_action "Shell", nil, "Split Vertically With Same Profile"
+      call_ui_action "Shell", nil, "Split Vertically with Current Profile"
     end
 
     # Split the active tab with horizontal panes
     #
     # @api public
     def horizontal_split
-      call_ui_action "Shell", nil, "Split Horizontally With Same Profile"
+      call_ui_action "Shell", nil, "Split Horizontally with Current Profile"
     end
 
     # to select panes; iTerm's Appscript select method does not work
@@ -278,7 +286,7 @@ module Consular
     #
     # @api public
     def execute_command(cmd, options = {})
-      context = options[:in] || active_window
+      context = options[:in] || active_tab
       context.write :text => cmd
     end
 
