@@ -52,11 +52,11 @@ Splitting tabs into panes works as follows:
 
 ```ruby
 tab do
-	pane "gitx" # first pane
-		pane do      # second pane level => horizontal split
-			run "irb"
-		end
-	pane 'ls'   # first pane level => vertical split
+  pane "gitx"    # first pane
+    pane do      # second pane level => horizontal split
+      run "irb"
+    end
+  pane 'ls'      # first pane level => vertical split
 end
 ```
 
