@@ -50,13 +50,15 @@ end
 
 Splitting tabs into panes works as follows:
 
-    tab do
-      pane "gitx" # first pane
-        pane do      # second pane level => horizontal split
-          run "irb"
-        end
-      pane 'ls'   # first pane level => vertical split
-    end
+```ruby
+tab do
+	pane "gitx" # first pane
+		pane do      # second pane level => horizontal split
+			run "irb"
+		end
+	pane 'ls'   # first pane level => vertical split
+end
+```
 
 should result into something like this:
 
