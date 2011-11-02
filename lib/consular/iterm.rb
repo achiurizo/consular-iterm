@@ -168,26 +168,23 @@ module Consular
     # @api public
     def top_level_pane_split(panes, commands)
       first_pane      = true
-      split_counter   = 0
 
       panes.keys.sort.each do |pane_key|
         pane_content  = panes[pane_key]
         pane_commands = pane_content[:commands]
 
-        if first_pane
-          vertical_split
-          split_counter += 1
-        end
-        first_pane = false if first_pane
+        vertical_split if first_pane
         execute_pane_commands(pane_commands,commands)
-        puts "pane!: " + pane_content.inspect
+
         if pane_content.key?(:panes)
+          select_pane('Left') if first_pane
           execute_subpanes pane_content[:panes], commands
           pane_content.delete :panes
         end
+
+        first_pane = false if first_pane
       end
 
-      split_counter.times { select_pane 'Left' }
     end
 
     # Execute commands in the context of sub panes
