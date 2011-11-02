@@ -55,7 +55,7 @@ module Consular
     # @api public
     def prepend_befores(commands, befores = nil)
       unless befores.nil? || befores.empty?
-        commands.insert(0, befores).flatten! 
+        commands.insert(0, befores).flatten!
       else
         commands
       end
@@ -116,7 +116,7 @@ module Consular
         end
 
         _first_run = false
-        commands = prepend_befores _content[:commands], _contents[:befores]
+        commands = prepend_befores _content[:commands], content[:before]
         commands = set_title _name, commands
 
         if _contents.key? :panes
@@ -125,48 +125,92 @@ module Consular
           commands.each { |cmd| execute_command cmd, :in => _tab }
         end
       end
-
     end
 
-    def first_pane_level_split(panes, tab_commands)
-      first_pane = true
+    # Execute the tab and associated panes with the designated content
+    #
+    # @param [Hash] tab_contents
+    #   The Context of the tab containing panes.
+    #
+    # @api public
+    def execute_panes(tab_contents)
+      panes    = tab_contents[:panes]
+      commands = tab_contents[:commands]
+      top_level_pane_split panes, commands
+      sub_level_pane_split panes, commands
+    end
+
+    # Execute commands in the context of a top level pane
+    #
+    # @param [Hash] panes
+    #   Pane contexts.
+    # @param [Array] commands
+    #   Current context tab commands.
+    #
+    # @api public
+    def top_level_pane_split(panes, commands)
+      first_pane      = true
       split_v_counter = 0
+
       panes.keys.sort.each do |pane_key|
-        pane_content = panes[pane_key]
+        pane_content  = panes[pane_key]
+        pane_commands = pane_content[:commands]
+
         unless first_pane
-          split_v
-          split_v_counter += 1 
+          vertical_split
+          split_counter += 1
         end
         first_pane = false if first_pane
-        pane_commands = pane_content[:commands] 
-        execute_pane_commands(pane_commands, tab_commands)
+        execute_pane_commands(pane_commands,commands)
       end
-      split_v_counter.times { select_pane 'Left' }
+
+      split_counter.times { select_pane 'Left' }
     end
 
-    def second_pane_level_split(panes, tab_commands)
+    # Execute commands in the context of a sub level pane
+    #
+    # @param [Array] panes
+    #   Array of pane contexts
+    # @param [Array] commands
+    #   Array of tab level commands
+    #
+    # @api public
+    def sub_level_pane_split(panes, commands)
       panes.keys.sort.each do |pane_key|
         pane_content = panes[pane_key]
-        handle_subpanes(pane_content[:panes], tab_commands) if pane_content.has_key? :panes
-        # select next vertical pane
+        execute_subpanes(pane_content[:panes], commands) if pane_content.has_key? :panes
         select_pane 'Right'
       end
     end
 
-    def handle_subpanes(subpanes, tab_commands)
+    # Execute commands in the context of sub panes
+    #
+    # @param [Array] subpanes
+    #   Sub panes for the top level pane
+    # @param [Array] tabcommands
+    #   Tab commands
+    #
+    # @api public
+    def execute_subpanes(subpanes, tab_commands)
       subpanes.keys.sort.each do |subpane_key|
         subpane_commands = subpanes[subpane_key][:commands]
-        split_h
+        horizontal_split
         execute_pane_commands(subpane_commands, tab_commands)
       end
     end
 
+    # Execute the commands within a pane
+    #
+    # @param [Array] pane_commands
+    #   Commands for the designated pane.
+    # @param [Array] tab_commands
+    #   Commands for the designated tabs.
+    #
+    # @api public
     def execute_pane_commands(pane_commands, tab_commands)
       pane_commands = tab_commands + pane_commands
-      pane_commands.each { |cmd| execute_command cmd}
+      pane_commands.each { |cmd| execute_command cmd }
     end
-
-
 
     # Split the active tab with vertical panes
     #
@@ -176,7 +220,7 @@ module Consular
     end
 
     # Split the active tab with horizontal panes
-    # 
+    #
     # @api public
     def horizontal_split
       call_ui_action "Shell", nil, "Split Horizontally With Same Profile"
