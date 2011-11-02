@@ -6,9 +6,9 @@ Gem::Specification.new do |s|
   s.version     = "1.0.0"
   s.authors     = ["Arthur Chiu"]
   s.email       = ["mr.arthur.chiu@gmail.com"]
-  s.homepage    = ""
-  s.summary     = %q{TODO: Write a gem summary}
-  s.description = %q{TODO: Write a gem description}
+  s.homepage    = "http://www.github.com/achiu/consular-iterm"
+  s.summary     = %q{Automate your ITerm with Consular}
+  s.description = %q{Terminal Automation for ITerm via Consular}
 
   s.rubyforge_project = "consular-iterm"
 
