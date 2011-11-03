@@ -24,7 +24,7 @@ so:
 
 ```ruby
 # You can require your additional core gems here.
-require 'consular/osx'
+require 'consular/iterm'
 
 # You can set specific Consular configurations
 # here.
