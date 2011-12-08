@@ -20,6 +20,7 @@ Gem::Specification.new do |s|
   s.add_dependency 'consular'
   s.add_dependency 'rb-appscript'
   s.add_development_dependency 'minitest'
+  s.add_development_dependency 'mocha'
 
   # specify any dependencies here; for example:
   # s.add_development_dependency "rspec"
