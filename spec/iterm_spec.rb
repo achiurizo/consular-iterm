@@ -23,9 +23,16 @@ describe Consular::ITerm do
     assert_equal ['ls'],       @core.prepend_befores(['ls'])
   end
 
-  it "should set .set_title" do
-    assert_equal ["PS1=\"$PS1\\[\\e]2;hey\\a\\]\"",'ls'], @core.set_title('hey', ['ls'])
-    assert_equal ['ls'],                                  @core.set_title(nil,   ['ls'])
+  it "should set the title of the tab if one given" do
+    (name = Object.new).expects(:set)
+    (tab = Object.new).stubs(:name).returns(name)
+    @core.set_title('the title', tab)
+  end
+
+  it "should not bother setting the tab title if not one given" do
+    (name = Object.new).expects(:set).never
+    (tab = Object.new).stubs(:name).returns(name)
+    @core.set_title(nil, tab)
   end
 
 end

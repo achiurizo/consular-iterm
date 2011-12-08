@@ -13,7 +13,7 @@ module Consular
 
     class << self
 
-      # Checks to see if the current system is darwin and 
+      # Checks to see if the current system is darwin and
       # if $TERM_PROGRAM is iTerm.app
       #
       # @api public
@@ -80,15 +80,14 @@ module Consular
 
     # Prepend a title setting command prior to the other commands.
     #
-    # @param [String] title
-    #   The title to set for the context of the commands.
-    # @param [Array<String>] commands
-    #   The context of commands to preprend to.
+    # @param [String]
+    #   The tab title.
+    # @param [Appscript::Reference]
+    #   The tab instance resulting from #open_tab.
     #
     # @api public
-    def set_title(title, commands)
-      cmd = "PS1=\"$PS1\\[\\e]2;#{title}\\a\\]\""
-      title ? commands.insert(0, cmd) : commands
+    def set_title(title, tab)
+      tab.name.set(title) if title
     end
 
     # Executes the commands for each designated window.
@@ -117,31 +116,31 @@ module Consular
     # @api public
     def execute_window(content, options = {})
       window_options = content[:options]
-      _contents      = content[:tabs]
-      _first_run     = true
+      tab_contents   = content[:tabs]
+      first_run      = true
 
-      _contents.keys.sort.each do |key|
-        _content = _contents[key]
-        _options = content[:options]
-        _name    = options[:name]
+      tab_contents.keys.sort.each do |key|
+        tab_content = tab_contents[key]
+        tab_options = tab_content[:options] || {}
+        tab_name    = tab_options[:name]
 
-        _tab =
-        if _first_run && !options[:default]
-          open_window options.merge(window_options)
-        else
-          key == 'default' ? active_tab : open_tab(_options) && active_tab
-        end
+        tab =
+          if first_run && !options[:default]
+            open_window options.merge(window_options)
+          else
+            key == 'default' ? active_tab : open_tab(tab_options) && active_tab
+          end
+        set_title tab_name, tab
 
-        _first_run = false
-        commands = prepend_befores _content[:commands], content[:before]
-        commands = set_title _name, commands
+        first_run = false
+        commands = prepend_befores tab_content[:commands], content[:before]
 
         if content.key? :panes
-          commands.each { |cmd| execute_command cmd, :in => _tab }
+          commands.each { |cmd| execute_command cmd, :in => tab }
           execute_panes content
           content.delete :panes
         else
-          commands.each { |cmd| execute_command cmd, :in => _tab }
+          commands.each { |cmd| execute_command cmd, :in => tab }
         end
       end
     end
@@ -233,7 +232,7 @@ module Consular
 
     # to select panes; iTerm's Appscript select method does not work
     # as expected, we have to select via menu instead
-    # 
+    #
     # @param [String] direction
     #   Direction to split the pane. The valid directions are:
     #   'Above', 'Below', 'Left', 'Right'
