@@ -1,6 +1,7 @@
 require 'rubygems'
 gem 'minitest'
 require 'minitest/autorun'
+require 'mocha'
 require File.expand_path('../../lib/consular/iterm', __FILE__)
 
 
