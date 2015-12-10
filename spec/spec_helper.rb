@@ -1,6 +1,7 @@
 require 'rubygems'
 gem 'minitest'
 require 'minitest/autorun'
+require 'minitest/reporters'
 require 'mocha'
 require File.expand_path('../../lib/consular/iterm', __FILE__)
 
@@ -31,4 +32,6 @@ class ColoredIO
   end
 end
 
-MiniTest::Unit.output = ColoredIO.new(MiniTest::Unit.output)
+Minitest::Reporters.use! [
+  Minitest::Reporters::DefaultReporter.new(color: true)
+]
