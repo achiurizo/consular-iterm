@@ -18,7 +18,7 @@ Gem::Specification.new do |s|
   s.require_paths = ["lib"]
 
   s.add_dependency 'consular'
-  s.add_dependency 'rb-appscript'
+  s.add_dependency 'rb-scpt'
   s.add_development_dependency 'minitest'
   s.add_development_dependency 'mocha'
 

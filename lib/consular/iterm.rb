@@ -1,5 +1,5 @@
 require 'consular'
-require 'appscript'
+require 'rb-scpt'
 require File.expand_path('../iterm_dsl', __FILE__)
 
 module Consular
