@@ -297,7 +297,7 @@ module Consular
     #
     # @api public
     def active_window
-      @terminal.current_terminal
+      @terminal.current_window
     end
 
     # Returns a reference to the iTerm menu bar.
