@@ -84,4 +84,10 @@ Now you can use iTerm Terminal to run your Consular scripts!
 
 ## Compatibility
 
-The current master branch is a work in progress towards iTerm2 v3 compatibility.  For a version compatible with iTerm2 v2, please use version `1.0.3`.
+The current master branch is a work in progress towards iTerm2 v3 compatibility.  If you find any commands that don't work as you expect, please file an issue.  For a version compatible with iTerm2 v2, please use version `1.0.3`.
+
+# Development
+
+iTerm2 documentation for the Applescript API is [here](https://www.iterm2.com/documentation-scripting.html).  Ruby bindings for these methods are provided by `rb-scpt`.  Generally, the mapping of an Applescript command to a Ruby method is easily discoverable in a `bundle console` session in this repo.  A `pry` session is useful for exploring the methods on an `Appscript.app` method.
+
+Test local changes with `rake spec` to run the test suite and `rake install` to build and install the gem locally.
