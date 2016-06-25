@@ -81,3 +81,7 @@ Nevertheless you should be able to split tabs into any kind of pane pattern you 
 with this syntax.
 
 Now you can use iTerm Terminal to run your Consular scripts!
+
+## Compatibility
+
+The current master branch is a work in progress towards iTerm2 v3 compatibility.  For a version compatible with iTerm2 v2, please use version `1.0.3`.
