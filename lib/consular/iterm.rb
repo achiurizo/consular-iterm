@@ -255,7 +255,7 @@ module Consular
     #
     # @api public
     def open_tab(options = nil)
-      active_window.launch_ :session => 'New session'
+      active_window.create_tab_with_default_profile
     end
 
     # Opens a new window and focuses
@@ -266,8 +266,7 @@ module Consular
     #
     # @api public
     def open_window(options = nil)
-      window = @terminal.make :new => :terminal
-      window.launch_ :session => 'New session'
+      @terminal.create_window_with_default_profile
     end
 
     # Execute the given command in the context of the active window.
@@ -297,7 +296,7 @@ module Consular
     #
     # @api public
     def active_window
-      @terminal.current_terminal
+      @terminal.current_window
     end
 
     # Returns a reference to the iTerm menu bar.
