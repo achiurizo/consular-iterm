@@ -38,7 +38,7 @@ module Consular
     # @api public
     def initialize(path)
       super
-      @terminal = app('iTerm')
+      @terminal = app('iTerm 2')
     end
 
     # Method called by runner to Execute Termfile setup.
@@ -303,7 +303,7 @@ module Consular
     #
     # @api public
     def iterm_menu
-      _process = app("System Events").processes["iTerm"]
+      _process = app("System Events").processes["iTerm2"]
       _process.menu_bars.first
     end
 
