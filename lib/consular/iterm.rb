@@ -38,7 +38,7 @@ module Consular
     # @api public
     def initialize(path)
       super
-      @terminal = app('iTerm 2')
+      @terminal = app('iTerm')
     end
 
     # Method called by runner to Execute Termfile setup.
