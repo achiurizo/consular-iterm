@@ -303,7 +303,7 @@ module Consular
     #
     # @api public
     def iterm_menu
-      _process = app("System Events").processes["iTerm"]
+      _process = app("System Events").processes["iTerm2"]
       _process.menu_bars.first
     end
 
