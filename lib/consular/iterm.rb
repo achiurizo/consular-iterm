@@ -137,7 +137,7 @@ module Consular
 
         if content.key? :panes
           commands.each { |cmd| execute_command cmd, :in => tab }
-          execute_panes content
+          execute_panes(content, commands)
           content.delete :panes
         else
           commands.each { |cmd| execute_command cmd, :in => tab }
@@ -151,9 +151,8 @@ module Consular
     #   The Context containing panes.
     #
     # @api public
-    def execute_panes(content)
+    def execute_panes(content, commands = [])
       panes    = content[:panes]
-      commands = content[:tabs][:commands]
       top_level_pane_split panes, commands
     end
 

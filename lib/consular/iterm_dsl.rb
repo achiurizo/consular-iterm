@@ -23,12 +23,8 @@ module Consular
 
       if block_given?
         pane_contents = panes[pane_name] = {:commands => []}
-        if @_context.has_key? :is_top_pane
-          run_context pane_contents[:commands], &block
-        else
-          pane_contents[:is_top_pane] = true
-          run_context pane_contents, &block
-        end
+        pane_contents[:is_top_pane] = true unless @_context.has_key? :is_top_pane
+        run_context pane_contents, &block
       else
         panes[pane_name] = { :commands => args }
       end
